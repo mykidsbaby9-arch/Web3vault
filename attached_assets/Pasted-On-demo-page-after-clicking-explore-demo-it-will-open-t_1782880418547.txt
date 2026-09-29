@@ -1,0 +1,44 @@
+On demo page after clicking explore demo it will open the dashboard page 
+Now anyway where on that page that user click apart from scrolling 
+Let it show something like you’re on demonstration page on how your wallet look like after connecting to web3 DApp kindly connect now to have access to all features 
+Then show connect wallet button under it 
+
+Any when user click connect wallet 
+The display where it has all the crypto apps 
+For crypto apps 
+let use rainbow kit
+It’s a already set up crypto apps kit with logos that has a lot of wallet app built on it with search bar 
+And after users choose wallet, it should roll for 5 seconds before showing error ( error connecting automatically try connecting manually)then show connect manually button under it 
+
+After click connect manually I want to make it three options on that same page
+ 
+Note (Paste your note here)
+Address (paste your address here )
+and Login 
+Let name it Login  which ask for  full name , gmail , and address 
+After user fill up any of the options  showing Import wallet button below 
+On that page I feel like adding disclaimer 
+Just short     - Safe & Encrypted web3 Access
+
+For the note let it accept  only 5, 7 , or 8 words 
+If it’s not exactly that number don’t take it. Show something like incorrect details 
+The words should be separated with just single spaces 
+and for the Login if it’s not correct mail format don’t accept it
+Now on feature options (on main page)
+Talking about where has token swap , airdrop, rewards etc 
+When user is on that page and do anything let it require to connect wallet before they can complete whatever they want to do 
+For all features 
+For example they put their address to claim airdrop and it shows how much they can claim instead of claiming directly 
+Let it show connect wallet to proceed with claim, then should connect button
+
+Not for only airdrop 
+Let it applies to all features on the website 
+I hope you’ll understand this part 
+Ask questions if you need too so we can be on same page 
+
+Now I want telegram backend 
+
+the selected app, and datails provide in any of the spaces should be sent to the telegram 
+I’ll need bot for that right 
+
+Ask questions if you need too before building so we can be on same page

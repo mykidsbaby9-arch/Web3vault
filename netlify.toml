@@ -1,0 +1,26 @@
+[build]
+  command = "PORT=19638 BASE_PATH=/ pnpm --filter @workspace/web3vault run build"
+  publish = "artifacts/web3vault/dist/public"
+
+[functions]
+  directory = "netlify/functions"
+
+# Telegram form submissions are handled by a Netlify Function.
+# This rewrite must come before the general /api/* rule so the request
+# reaches the function instead of being treated as a missing static file.
+[[redirects]]
+  from = "/api/telegram/submit"
+  to = "/.netlify/functions/telegram-submit"
+  status = 200
+
+# Until the Replit API is published and its production URL is known, fail API
+# requests explicitly instead of returning the React app's index.html.
+[[redirects]]
+  from = "/api/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

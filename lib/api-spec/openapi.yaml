@@ -1,0 +1,1885 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Web3Vault API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: market
+    description: Live market data and prices
+  - name: portfolio
+    description: Portfolio tracking and analytics
+  - name: trading
+    description: Trading terminal
+  - name: swap
+    description: Token swap
+  - name: bridge
+    description: Cross-chain bridge
+  - name: wallet
+    description: Wallet management
+  - name: walletguard
+    description: Wallet security / guard
+  - name: airdrops
+    description: Airdrop campaigns
+  - name: rewards
+    description: Rewards center
+  - name: nfts
+    description: NFT dashboard
+  - name: transactions
+    description: Transaction history
+  - name: profile
+    description: User profile
+  - name: notifications
+    description: Notifications
+  - name: admin
+    description: Admin dashboard
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # MARKET DATA
+  /market/tickers:
+    get:
+      operationId: getMarketTickers
+      tags: [market]
+      summary: Get live price tickers for top tokens
+      responses:
+        "200":
+          description: List of market tickers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketTicker"
+
+  /market/trending:
+    get:
+      operationId: getTrendingTokens
+      tags: [market]
+      summary: Get trending tokens
+      responses:
+        "200":
+          description: Trending tokens
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketTicker"
+
+  /market/gainers:
+    get:
+      operationId: getTopGainers
+      tags: [market]
+      summary: Get top gainers
+      responses:
+        "200":
+          description: Top gainers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketTicker"
+
+  /market/losers:
+    get:
+      operationId: getTopLosers
+      tags: [market]
+      summary: Get top losers
+      responses:
+        "200":
+          description: Top losers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketTicker"
+
+  /market/chart:
+    get:
+      operationId: getTokenChart
+      tags: [market]
+      summary: Get OHLCV chart data for a token
+      parameters:
+        - name: symbol
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [1h, 24h, 7d, 30d, 90d, 1y]
+            default: 24h
+      responses:
+        "200":
+          description: Chart data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChartCandle"
+
+  # PORTFOLIO
+  /portfolio/summary:
+    get:
+      operationId: getPortfolioSummary
+      tags: [portfolio]
+      summary: Get portfolio summary with total value and P&L
+      responses:
+        "200":
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioSummary"
+
+  /portfolio/holdings:
+    get:
+      operationId: getPortfolioHoldings
+      tags: [portfolio]
+      summary: Get all token holdings
+      responses:
+        "200":
+          description: Token holdings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TokenHolding"
+
+  /portfolio/history:
+    get:
+      operationId: getPortfolioHistory
+      tags: [portfolio]
+      summary: Get portfolio value history
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [7d, 30d, 90d, 1y]
+            default: 30d
+      responses:
+        "200":
+          description: Portfolio history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PortfolioSnapshot"
+
+  # TRADING
+  /trading/watchlist:
+    get:
+      operationId: getWatchlist
+      tags: [trading]
+      summary: Get user watchlist
+      responses:
+        "200":
+          description: Watchlist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WatchlistItem"
+
+    post:
+      operationId: addToWatchlist
+      tags: [trading]
+      summary: Add token to watchlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WatchlistInput"
+      responses:
+        "201":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistItem"
+
+  /trading/watchlist/{id}:
+    delete:
+      operationId: removeFromWatchlist
+      tags: [trading]
+      summary: Remove token from watchlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Removed
+
+  /trading/orders:
+    get:
+      operationId: getOrders
+      tags: [trading]
+      summary: Get open and recent orders
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, filled, cancelled, all]
+            default: all
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TradeOrder"
+
+    post:
+      operationId: placeOrder
+      tags: [trading]
+      summary: Place a buy or sell order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TradeOrderInput"
+      responses:
+        "201":
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradeOrder"
+
+  /trading/history:
+    get:
+      operationId: getTradingHistory
+      tags: [trading]
+      summary: Get trading history
+      responses:
+        "200":
+          description: Trading history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TradeOrder"
+
+  # SWAP
+  /swap/quote:
+    post:
+      operationId: getSwapQuote
+      tags: [swap]
+      summary: Get a swap quote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SwapQuoteInput"
+      responses:
+        "200":
+          description: Swap quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SwapQuote"
+
+  /swap/execute:
+    post:
+      operationId: executeSwap
+      tags: [swap]
+      summary: Execute a token swap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SwapExecuteInput"
+      responses:
+        "200":
+          description: Swap executed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SwapResult"
+
+  /swap/history:
+    get:
+      operationId: getSwapHistory
+      tags: [swap]
+      summary: Get swap history
+      responses:
+        "200":
+          description: Swap history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SwapResult"
+
+  # BRIDGE
+  /bridge/quote:
+    post:
+      operationId: getBridgeQuote
+      tags: [bridge]
+      summary: Get a bridge quote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BridgeQuoteInput"
+      responses:
+        "200":
+          description: Bridge quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BridgeQuote"
+
+  /bridge/execute:
+    post:
+      operationId: executeBridge
+      tags: [bridge]
+      summary: Execute a bridge transfer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BridgeExecuteInput"
+      responses:
+        "200":
+          description: Bridge executed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BridgeResult"
+
+  /bridge/history:
+    get:
+      operationId: getBridgeHistory
+      tags: [bridge]
+      summary: Get bridge history
+      responses:
+        "200":
+          description: Bridge history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BridgeResult"
+
+  # WALLET GUARD
+  /walletguard/scan:
+    post:
+      operationId: scanWallet
+      tags: [walletguard]
+      summary: Scan wallet for risks and suspicious approvals
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WalletScanInput"
+      responses:
+        "200":
+          description: Scan results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletScanResult"
+
+  /walletguard/approvals:
+    get:
+      operationId: getApprovals
+      tags: [walletguard]
+      summary: Get token approvals for wallet
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Token approvals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TokenApproval"
+
+  /walletguard/revoke:
+    post:
+      operationId: revokeApproval
+      tags: [walletguard]
+      summary: Revoke a token approval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevokeInput"
+      responses:
+        "200":
+          description: Revoked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RevokeResult"
+
+  # AIRDROPS
+  /airdrops:
+    get:
+      operationId: getAirdrops
+      tags: [airdrops]
+      summary: Get available airdrops
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, claimed, upcoming, all]
+            default: all
+      responses:
+        "200":
+          description: Airdrops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Airdrop"
+
+  /airdrops/{id}/claim:
+    post:
+      operationId: claimAirdrop
+      tags: [airdrops]
+      summary: Claim an airdrop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Claimed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AirdropClaimResult"
+
+  /airdrops/check:
+    post:
+      operationId: checkEligibility
+      tags: [airdrops]
+      summary: Check airdrop eligibility for a wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EligibilityCheckInput"
+      responses:
+        "200":
+          description: Eligibility results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EligibilityResult"
+
+  # REWARDS
+  /rewards/summary:
+    get:
+      operationId: getRewardsSummary
+      tags: [rewards]
+      summary: Get rewards summary with points and tiers
+      responses:
+        "200":
+          description: Rewards summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RewardsSummary"
+
+  /rewards/history:
+    get:
+      operationId: getRewardsHistory
+      tags: [rewards]
+      summary: Get rewards history
+      responses:
+        "200":
+          description: Rewards history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RewardEvent"
+
+  /rewards/leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [rewards]
+      summary: Get rewards leaderboard
+      responses:
+        "200":
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaderboardEntry"
+
+  /rewards/daily/claim:
+    post:
+      operationId: claimDailyReward
+      tags: [rewards]
+      summary: Claim daily reward
+      responses:
+        "200":
+          description: Daily reward claimed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyRewardResult"
+
+  /rewards/referral:
+    get:
+      operationId: getReferralInfo
+      tags: [rewards]
+      summary: Get referral info and stats
+      responses:
+        "200":
+          description: Referral info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReferralInfo"
+
+  # NFTS
+  /nfts:
+    get:
+      operationId: getNfts
+      tags: [nfts]
+      summary: Get user NFT gallery
+      parameters:
+        - name: address
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: NFTs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Nft"
+
+  /nfts/collections:
+    get:
+      operationId: getNftCollections
+      tags: [nfts]
+      summary: Get NFT collections summary
+      responses:
+        "200":
+          description: NFT collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NftCollection"
+
+  /nfts/{id}:
+    get:
+      operationId: getNftDetail
+      tags: [nfts]
+      summary: Get NFT detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: NFT detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Nft"
+
+  # TRANSACTIONS
+  /transactions:
+    get:
+      operationId: getTransactions
+      tags: [transactions]
+      summary: Get transaction history
+      parameters:
+        - name: network
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Transactions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionPage"
+
+  # WALLET / PROFILE
+  /wallet/connect:
+    post:
+      operationId: connectWallet
+      tags: [wallet]
+      summary: Connect wallet and create/return user session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WalletConnectInput"
+      responses:
+        "200":
+          description: Connected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WalletSession"
+
+  /wallet/disconnect:
+    post:
+      operationId: disconnectWallet
+      tags: [wallet]
+      summary: Disconnect wallet
+      responses:
+        "200":
+          description: Disconnected
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get user profile
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update user profile settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  # NOTIFICATIONS
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [notifications]
+      summary: Get user notifications
+      parameters:
+        - name: unread
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Marked read
+
+  /notifications/read-all:
+    post:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      summary: Mark all notifications as read
+      responses:
+        "200":
+          description: All marked read
+
+  # ADMIN
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get admin platform statistics
+      responses:
+        "200":
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/users:
+    get:
+      operationId: getAdminUsers
+      tags: [admin]
+      summary: Get users list for admin
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserPage"
+
+  /admin/activity:
+    get:
+      operationId: getAdminActivity
+      tags: [admin]
+      summary: Get recent platform activity
+      responses:
+        "200":
+          description: Activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminActivityEvent"
+
+  /admin/announcements:
+    get:
+      operationId: getAnnouncements
+      tags: [admin]
+      summary: Get platform announcements
+      responses:
+        "200":
+          description: Announcements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Announcement"
+
+    post:
+      operationId: createAnnouncement
+      tags: [admin]
+      summary: Create a platform announcement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnnouncementInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    MarketTicker:
+      type: object
+      required: [symbol, name, price, change24h, changePercent24h, volume24h, marketCap, logoUrl]
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        change24h:
+          type: number
+        changePercent24h:
+          type: number
+        volume24h:
+          type: number
+        marketCap:
+          type: number
+        logoUrl:
+          type: string
+        rank:
+          type: ["integer", "null"]
+
+    ChartCandle:
+      type: object
+      required: [timestamp, open, high, low, close, volume]
+      properties:
+        timestamp:
+          type: integer
+        open:
+          type: number
+        high:
+          type: number
+        low:
+          type: number
+        close:
+          type: number
+        volume:
+          type: number
+
+    PortfolioSummary:
+      type: object
+      required: [totalValue, totalCost, pnl, pnlPercent, dayChange, dayChangePercent, networkBreakdown]
+      properties:
+        totalValue:
+          type: number
+        totalCost:
+          type: number
+        pnl:
+          type: number
+        pnlPercent:
+          type: number
+        dayChange:
+          type: number
+        dayChangePercent:
+          type: number
+        networkBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkAllocation"
+
+    NetworkAllocation:
+      type: object
+      required: [network, value, percentage]
+      properties:
+        network:
+          type: string
+        value:
+          type: number
+        percentage:
+          type: number
+        color:
+          type: string
+
+    TokenHolding:
+      type: object
+      required: [symbol, name, balance, price, value, cost, pnl, pnlPercent, allocation, network, logoUrl]
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        balance:
+          type: number
+        price:
+          type: number
+        value:
+          type: number
+        cost:
+          type: number
+        pnl:
+          type: number
+        pnlPercent:
+          type: number
+        allocation:
+          type: number
+        network:
+          type: string
+        logoUrl:
+          type: string
+        contractAddress:
+          type: ["string", "null"]
+
+    PortfolioSnapshot:
+      type: object
+      required: [date, value]
+      properties:
+        date:
+          type: string
+        value:
+          type: number
+
+    WatchlistItem:
+      type: object
+      required: [id, symbol, name, price, changePercent24h, logoUrl]
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        changePercent24h:
+          type: number
+        logoUrl:
+          type: string
+        addedAt:
+          type: string
+
+    WatchlistInput:
+      type: object
+      required: [symbol, name, logoUrl]
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        logoUrl:
+          type: string
+
+    TradeOrder:
+      type: object
+      required: [id, side, symbol, amount, price, total, status, network, createdAt]
+      properties:
+        id:
+          type: integer
+        side:
+          type: string
+          enum: [buy, sell]
+        symbol:
+          type: string
+        amount:
+          type: number
+        price:
+          type: number
+        total:
+          type: number
+        status:
+          type: string
+          enum: [open, filled, cancelled, pending]
+        network:
+          type: string
+        fee:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+        filledAt:
+          type: ["string", "null"]
+
+    TradeOrderInput:
+      type: object
+      required: [side, symbol, amount, price, network]
+      properties:
+        side:
+          type: string
+          enum: [buy, sell]
+        symbol:
+          type: string
+        amount:
+          type: number
+        price:
+          type: number
+        network:
+          type: string
+        orderType:
+          type: string
+          enum: [market, limit]
+
+    SwapQuoteInput:
+      type: object
+      required: [fromToken, toToken, amount, network]
+      properties:
+        fromToken:
+          type: string
+        toToken:
+          type: string
+        amount:
+          type: number
+        network:
+          type: string
+        slippage:
+          type: number
+
+    SwapQuote:
+      type: object
+      required: [fromToken, toToken, fromAmount, toAmount, exchangeRate, priceImpact, estimatedGas, slippage, route]
+      properties:
+        fromToken:
+          type: string
+        toToken:
+          type: string
+        fromAmount:
+          type: number
+        toAmount:
+          type: number
+        exchangeRate:
+          type: number
+        priceImpact:
+          type: number
+        estimatedGas:
+          type: number
+        gasFeeUsd:
+          type: number
+        slippage:
+          type: number
+        route:
+          type: array
+          items:
+            type: string
+        expiresAt:
+          type: string
+
+    SwapExecuteInput:
+      type: object
+      required: [fromToken, toToken, fromAmount, network, walletAddress]
+      properties:
+        fromToken:
+          type: string
+        toToken:
+          type: string
+        fromAmount:
+          type: number
+        network:
+          type: string
+        walletAddress:
+          type: string
+        slippage:
+          type: number
+
+    SwapResult:
+      type: object
+      required: [id, fromToken, toToken, fromAmount, toAmount, txHash, status, network, createdAt]
+      properties:
+        id:
+          type: integer
+        fromToken:
+          type: string
+        toToken:
+          type: string
+        fromAmount:
+          type: number
+        toAmount:
+          type: number
+        txHash:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, failed]
+        network:
+          type: string
+        gasFee:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+
+    BridgeQuoteInput:
+      type: object
+      required: [fromNetwork, toNetwork, token, amount]
+      properties:
+        fromNetwork:
+          type: string
+        toNetwork:
+          type: string
+        token:
+          type: string
+        amount:
+          type: number
+
+    BridgeQuote:
+      type: object
+      required: [fromNetwork, toNetwork, token, amount, receiveAmount, bridgeFee, estimatedTime]
+      properties:
+        fromNetwork:
+          type: string
+        toNetwork:
+          type: string
+        token:
+          type: string
+        amount:
+          type: number
+        receiveAmount:
+          type: number
+        bridgeFee:
+          type: number
+        bridgeFeeUsd:
+          type: number
+        estimatedTime:
+          type: string
+        gasFeeUsd:
+          type: number
+
+    BridgeExecuteInput:
+      type: object
+      required: [fromNetwork, toNetwork, token, amount, walletAddress]
+      properties:
+        fromNetwork:
+          type: string
+        toNetwork:
+          type: string
+        token:
+          type: string
+        amount:
+          type: number
+        walletAddress:
+          type: string
+
+    BridgeResult:
+      type: object
+      required: [id, fromNetwork, toNetwork, token, amount, receiveAmount, txHash, status, createdAt]
+      properties:
+        id:
+          type: integer
+        fromNetwork:
+          type: string
+        toNetwork:
+          type: string
+        token:
+          type: string
+        amount:
+          type: number
+        receiveAmount:
+          type: number
+        txHash:
+          type: string
+        destinationTxHash:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, in_progress, completed, failed]
+        createdAt:
+          type: string
+        completedAt:
+          type: ["string", "null"]
+
+    WalletScanInput:
+      type: object
+      required: [address, network]
+      properties:
+        address:
+          type: string
+        network:
+          type: string
+
+    WalletScanResult:
+      type: object
+      required: [address, riskScore, riskLevel, threats, recommendations, scannedAt]
+      properties:
+        address:
+          type: string
+        riskScore:
+          type: integer
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        threats:
+          type: array
+          items:
+            $ref: "#/components/schemas/SecurityThreat"
+        recommendations:
+          type: array
+          items:
+            type: string
+        scannedAt:
+          type: string
+
+    SecurityThreat:
+      type: object
+      required: [type, severity, description]
+      properties:
+        type:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        description:
+          type: string
+        contractAddress:
+          type: ["string", "null"]
+
+    TokenApproval:
+      type: object
+      required: [id, token, spender, spenderName, allowance, network, approvedAt]
+      properties:
+        id:
+          type: integer
+        token:
+          type: string
+        tokenSymbol:
+          type: string
+        spender:
+          type: string
+        spenderName:
+          type: string
+        allowance:
+          type: string
+        isUnlimited:
+          type: boolean
+        network:
+          type: string
+        riskLevel:
+          type: string
+          enum: [safe, caution, danger]
+        approvedAt:
+          type: string
+
+    RevokeInput:
+      type: object
+      required: [approvalId, walletAddress]
+      properties:
+        approvalId:
+          type: integer
+        walletAddress:
+          type: string
+
+    RevokeResult:
+      type: object
+      required: [success, txHash]
+      properties:
+        success:
+          type: boolean
+        txHash:
+          type: string
+
+    Airdrop:
+      type: object
+      required: [id, name, token, logoUrl, amount, status, endDate, description, network]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        token:
+          type: string
+        logoUrl:
+          type: string
+        amount:
+          type: number
+        amountUsd:
+          type: ["number", "null"]
+        status:
+          type: string
+          enum: [active, claimed, upcoming, expired]
+        endDate:
+          type: string
+        startDate:
+          type: ["string", "null"]
+        description:
+          type: string
+        network:
+          type: string
+        requirements:
+          type: array
+          items:
+            type: string
+
+    AirdropClaimResult:
+      type: object
+      required: [success, txHash, amount, token]
+      properties:
+        success:
+          type: boolean
+        txHash:
+          type: string
+        amount:
+          type: number
+        token:
+          type: string
+
+    EligibilityCheckInput:
+      type: object
+      required: [walletAddress]
+      properties:
+        walletAddress:
+          type: string
+
+    EligibilityResult:
+      type: object
+      required: [airdropId, airdropName, eligible, amount, reason]
+      properties:
+        airdropId:
+          type: integer
+        airdropName:
+          type: string
+        eligible:
+          type: boolean
+        amount:
+          type: ["number", "null"]
+        reason:
+          type: string
+
+    RewardsSummary:
+      type: object
+      required: [totalPoints, tier, tierProgress, dailyStreakDays, dailyClaimedToday, referralCount, tradingRewards, stakingRewards, badges]
+      properties:
+        totalPoints:
+          type: integer
+        tier:
+          type: string
+          enum: [bronze, silver, gold, platinum, diamond]
+        tierProgress:
+          type: number
+        nextTierPoints:
+          type: integer
+        dailyStreakDays:
+          type: integer
+        dailyClaimedToday:
+          type: boolean
+        referralCount:
+          type: integer
+        tradingRewards:
+          type: number
+        stakingRewards:
+          type: number
+        badges:
+          type: array
+          items:
+            $ref: "#/components/schemas/Badge"
+
+    Badge:
+      type: object
+      required: [id, name, description, icon, earnedAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        earnedAt:
+          type: ["string", "null"]
+        isEarned:
+          type: boolean
+
+    RewardEvent:
+      type: object
+      required: [id, type, points, description, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [daily, referral, trade, staking, achievement, bonus]
+        points:
+          type: integer
+        description:
+          type: string
+        createdAt:
+          type: string
+
+    LeaderboardEntry:
+      type: object
+      required: [rank, address, points, tier, badge]
+      properties:
+        rank:
+          type: integer
+        address:
+          type: string
+        points:
+          type: integer
+        tier:
+          type: string
+        badge:
+          type: string
+        isCurrentUser:
+          type: boolean
+
+    DailyRewardResult:
+      type: object
+      required: [success, points, streakDays, bonusMultiplier]
+      properties:
+        success:
+          type: boolean
+        points:
+          type: integer
+        streakDays:
+          type: integer
+        bonusMultiplier:
+          type: number
+
+    ReferralInfo:
+      type: object
+      required: [referralCode, referralLink, totalReferrals, pendingReferrals, totalEarned]
+      properties:
+        referralCode:
+          type: string
+        referralLink:
+          type: string
+        totalReferrals:
+          type: integer
+        pendingReferrals:
+          type: integer
+        totalEarned:
+          type: integer
+        recentReferrals:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferralRecord"
+
+    ReferralRecord:
+      type: object
+      required: [address, status, pointsEarned, joinedAt]
+      properties:
+        address:
+          type: string
+        status:
+          type: string
+          enum: [pending, active, rewarded]
+        pointsEarned:
+          type: integer
+        joinedAt:
+          type: string
+
+    Nft:
+      type: object
+      required: [id, name, collection, imageUrl, network, tokenId, floorPrice]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        collection:
+          type: string
+        imageUrl:
+          type: string
+        network:
+          type: string
+        tokenId:
+          type: string
+        contractAddress:
+          type: string
+        floorPrice:
+          type: number
+        lastSalePrice:
+          type: ["number", "null"]
+        rarity:
+          type: ["string", "null"]
+        traits:
+          type: array
+          items:
+            $ref: "#/components/schemas/NftTrait"
+
+    NftTrait:
+      type: object
+      required: [traitType, value, rarity]
+      properties:
+        traitType:
+          type: string
+        value:
+          type: string
+        rarity:
+          type: number
+
+    NftCollection:
+      type: object
+      required: [name, slug, imageUrl, count, totalValue, floorPrice, network]
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        imageUrl:
+          type: string
+        count:
+          type: integer
+        totalValue:
+          type: number
+        floorPrice:
+          type: number
+        volume24h:
+          type: ["number", "null"]
+        network:
+          type: string
+
+    Transaction:
+      type: object
+      required: [id, hash, type, from, to, amount, token, status, network, gasUsed, gasFee, timestamp]
+      properties:
+        id:
+          type: integer
+        hash:
+          type: string
+        type:
+          type: string
+          enum: [send, receive, swap, bridge, approve, mint, burn, stake, unstake]
+        from:
+          type: string
+        to:
+          type: string
+        amount:
+          type: number
+        amountUsd:
+          type: ["number", "null"]
+        token:
+          type: string
+        status:
+          type: string
+          enum: [confirmed, pending, failed]
+        network:
+          type: string
+        gasUsed:
+          type: number
+        gasFee:
+          type: number
+        gasFeeUsd:
+          type: ["number", "null"]
+        timestamp:
+          type: string
+
+    TransactionPage:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    WalletConnectInput:
+      type: object
+      required: [address, chainId, signature, message]
+      properties:
+        address:
+          type: string
+        chainId:
+          type: integer
+        signature:
+          type: string
+        message:
+          type: string
+
+    WalletSession:
+      type: object
+      required: [address, chainId, sessionToken, expiresAt, isNewUser]
+      properties:
+        address:
+          type: string
+        chainId:
+          type: integer
+        sessionToken:
+          type: string
+        expiresAt:
+          type: string
+        isNewUser:
+          type: boolean
+
+    UserProfile:
+      type: object
+      required: [address, username, avatarUrl, joinedAt, notificationsEnabled, twoFactorEnabled]
+      properties:
+        address:
+          type: string
+        username:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        joinedAt:
+          type: string
+        notificationsEnabled:
+          type: boolean
+        twoFactorEnabled:
+          type: boolean
+        preferredNetwork:
+          type: ["string", "null"]
+        securityScore:
+          type: integer
+        rewardPoints:
+          type: integer
+        tier:
+          type: string
+
+    ProfileUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        bio:
+          type: string
+        email:
+          type: string
+        notificationsEnabled:
+          type: boolean
+        preferredNetwork:
+          type: string
+
+    Notification:
+      type: object
+      required: [id, type, title, message, isRead, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [transaction, reward, airdrop, security, trading, system]
+        title:
+          type: string
+        message:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+        link:
+          type: ["string", "null"]
+
+    AdminStats:
+      type: object
+      required: [totalUsers, activeWallets, dailyActiveUsers, tradingVolume24h, totalTransactions, networkUsage, revenueStats]
+      properties:
+        totalUsers:
+          type: integer
+        activeWallets:
+          type: integer
+        dailyActiveUsers:
+          type: integer
+        tradingVolume24h:
+          type: number
+        totalTransactions:
+          type: integer
+        networkUsage:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetworkStat"
+        revenueStats:
+          $ref: "#/components/schemas/RevenueStats"
+        growthStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyGrowthStat"
+
+    NetworkStat:
+      type: object
+      required: [network, users, transactions, percentage]
+      properties:
+        network:
+          type: string
+        users:
+          type: integer
+        transactions:
+          type: integer
+        percentage:
+          type: number
+
+    RevenueStats:
+      type: object
+      required: [totalRevenue, swapFees, bridgeFees, tradingFees, monthlyRevenue]
+      properties:
+        totalRevenue:
+          type: number
+        swapFees:
+          type: number
+        bridgeFees:
+          type: number
+        tradingFees:
+          type: number
+        monthlyRevenue:
+          type: number
+
+    DailyGrowthStat:
+      type: object
+      required: [date, users, volume]
+      properties:
+        date:
+          type: string
+        users:
+          type: integer
+        volume:
+          type: number
+
+    AdminUser:
+      type: object
+      required: [id, address, joinedAt, lastActive, totalTrades, rewardPoints, tier, isActive]
+      properties:
+        id:
+          type: integer
+        address:
+          type: string
+        username:
+          type: ["string", "null"]
+        joinedAt:
+          type: string
+        lastActive:
+          type: string
+        totalTrades:
+          type: integer
+        rewardPoints:
+          type: integer
+        tier:
+          type: string
+        isActive:
+          type: boolean
+
+    AdminUserPage:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUser"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    AdminActivityEvent:
+      type: object
+      required: [id, type, description, address, network, timestamp]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        network:
+          type: string
+        timestamp:
+          type: string
+        amount:
+          type: ["number", "null"]
+
+    Announcement:
+      type: object
+      required: [id, title, content, type, isActive, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+          enum: [info, warning, success, promo]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        expiresAt:
+          type: ["string", "null"]
+
+    AnnouncementInput:
+      type: object
+      required: [title, content, type]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+          enum: [info, warning, success, promo]
+        expiresAt:
+          type: string

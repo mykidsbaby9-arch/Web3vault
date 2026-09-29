@@ -1,0 +1,3 @@
+/api/telegram/submit /.netlify/functions/telegram-submit 200
+/api/* /404.html 404
+/* /index.html 200

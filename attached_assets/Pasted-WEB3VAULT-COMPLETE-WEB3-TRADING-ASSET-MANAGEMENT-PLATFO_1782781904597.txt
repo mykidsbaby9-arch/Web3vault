@@ -1,0 +1,327 @@
+WEB3VAULT – COMPLETE WEB3 TRADING & ASSET MANAGEMENT PLATFORM
+
+Build a fully responsive, production-ready Web3 platform called Web3Vault that combines wallet management, live trading, token swapping, bridging, rewards, airdrop claiming, portfolio tracking, NFT management, and advanced security tools.
+
+PLATFORM VISION
+
+Web3Vault should be a modern crypto super-app where users can connect their wallets, trade assets, manage portfolios, bridge tokens across networks, claim rewards, track NFTs, and access Web3 services from a single dashboard.
+
+The design must feel premium, futuristic, secure, and similar to leading crypto platforms.
+
+TECH STACK
+
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- WalletConnect AppKit
+- Viem or Ethers.js
+- React Query
+- Framer Motion
+- Node.js Backend
+- PostgreSQL
+- Redis
+- JWT Authentication
+- REST API
+
+BRANDING
+
+Website Name: Web3Vault
+
+Colors:
+- Deep Navy (#0B1220)
+- Electric Blue (#3B82F6)
+- Cyan (#06B6D4)
+- White (#FFFFFF)
+
+Design Style:
+- Dark mode default
+- Glassmorphism cards
+- Premium crypto dashboard
+- Smooth animations
+- Mobile-first responsive design
+
+LANDING PAGE
+
+Hero Section:
+Headline:
+"Secure, Trade, Bridge and Grow Your Digital Assets"
+
+Subheadline:
+"One powerful dashboard for wallet management, live trading, token swaps, bridges, rewards, NFTs, and Web3 tools."
+
+Buttons:
+- Connect Wallet
+- Launch App
+
+Include:
+- Animated blockchain background
+- Live crypto market ticker
+- Featured statistics
+- Call-to-action sections
+
+FEATURES
+
+- Wallet Connection
+- Live Trading
+- Wallet Guard
+- Token Swap
+- Cross-Chain Bridge
+- Claim Airdrops
+- Rewards Center
+- Portfolio Tracking
+- NFT Management
+- Transaction Monitoring
+- Multi-Chain Support
+- DeFi Access
+
+WALLET AUTHENTICATION
+
+Use WalletConnect AppKit.
+
+Supported Wallets:
+- MetaMask
+- Trust Wallet
+- Coinbase Wallet
+- Rainbow Wallet
+- Phantom Wallet
+- WalletConnect Compatible Wallets
+
+Features:
+- Connect Wallet
+- Disconnect Wallet
+- Auto Reconnect
+- Signature Verification
+- Network Switching
+- Copy Wallet Address
+- Session Management
+
+DASHBOARD
+
+Display:
+- Wallet Address
+- Portfolio Value
+- Wallet Balance
+- Connected Network
+- Profit & Loss Tracking
+- Recent Transactions
+- Security Status
+
+LIVE TRADING TERMINAL
+
+Features:
+- Live Token Prices
+- Trading Charts
+- Buy/Sell Interface
+- Market Overview
+- Open Orders
+- Trading History
+- Price Alerts
+- Watchlist
+- Real-Time Updates
+
+Sections:
+- Spot Trading
+- Trending Tokens
+- Top Gainers
+- Top Losers
+
+TOKEN SWAP
+
+Features:
+- Token Selection
+- Network Selection
+- Swap Preview
+- Estimated Gas Fee
+- Slippage Settings
+- Price Impact Display
+- Swap History
+
+Supported Networks:
+- Ethereum
+- BNB Chain
+- Polygon
+- Arbitrum
+- Base
+- Avalanche
+
+CROSS-CHAIN BRIDGE
+
+Features:
+- Source Network
+- Destination Network
+- Token Selection
+- Fee Estimation
+- Transaction Tracking
+- Bridge History
+
+Supported Networks:
+- Ethereum
+- BNB Chain
+- Polygon
+- Arbitrum
+- Optimism
+- Base
+- Avalanche
+
+WALLET GUARD
+
+Advanced Security Center
+
+Features:
+- Wallet Risk Score
+- Scam Contract Detection
+- Suspicious Approval Scanner
+- Approval Revocation Tool
+- Phishing Protection
+- Wallet Security Analysis
+- Malicious Transaction Detection
+- Security Recommendations
+
+CLAIM AIRDROPS
+
+Features:
+- Eligible Airdrops
+- Active Campaigns
+- Claim Status
+- Claim History
+- Eligibility Checker
+- Reward Tracking
+
+Filters:
+- Active
+- Claimed
+- Upcoming
+
+REWARDS CENTER
+
+Features:
+- Daily Rewards
+- Referral Rewards
+- Loyalty Points
+- Trading Rewards
+- Staking Rewards
+- Achievement Badges
+
+Display:
+- Current Points
+- Reward History
+- Referral Dashboard
+- Leaderboard
+
+PORTFOLIO TRACKER
+
+Features:
+- Token Holdings
+- Portfolio Allocation
+- Asset Performance
+- Profit & Loss
+- Historical Performance
+- Investment Analytics
+- Interactive Charts
+
+NFT DASHBOARD
+
+Features:
+- NFT Gallery
+- Collection Overview
+- Floor Prices
+- NFT Details
+- Portfolio Value
+- NFT Activity
+
+TRANSACTION CENTER
+
+Features:
+- Transaction Hash
+- Amount
+- Network
+- Status
+- Gas Fees
+- Timestamp
+- Search
+- Filter
+- Export History
+
+PROFILE PAGE
+
+Features:
+- Wallet Information
+- Account Settings
+- Notification Settings
+- Connected Devices
+- Security Settings
+- Reward Statistics
+
+NOTIFICATION SYSTEM
+
+- Transaction Alerts
+- Reward Notifications
+- Trading Alerts
+- Airdrop Updates
+- Security Warnings
+
+ADMIN DASHBOARD
+
+User Management:
+- Total Users
+- Active Wallets
+- User Activity
+
+Analytics:
+- Daily Users
+- Trading Volume
+- Network Usage
+- Revenue Statistics
+
+Content Management:
+- Homepage Content
+- Announcements
+- Campaign Management
+
+Security Monitoring:
+- Suspicious Activity
+- Wallet Risks
+- Audit Logs
+
+SECURITY REQUIREMENTS
+
+- Wallet Signature Authentication
+- Session Security
+- Rate Limiting
+- Input Validation
+- CSRF Protection
+- XSS Protection
+- Secure API Endpoints
+- Encryption of Sensitive Data
+
+PERFORMANCE REQUIREMENTS
+
+- SEO Optimized
+- Fast Loading
+- Server-Side Rendering
+- Image Optimization
+- Lazy Loading
+- Accessibility Compliance
+- Production Ready
+
+DELIVERABLES
+
+Generate:
+1. Complete Folder Structure
+2. Frontend Application
+3. Backend API
+4. Database Models
+5. WalletConnect AppKit Integration
+6. Live Trading Interface
+7. Token Swap System
+8. Cross-Chain Bridge
+9. Wallet Guard Module
+10. Airdrop Center
+11. Rewards System
+12. NFT Dashboard
+13. Portfolio Tracker
+14. Admin Dashboard
+15. Authentication System
+16. Responsive Design
+17. Production Deployment Configuration
+18. Enterprise-Level Clean and Scalable Code
